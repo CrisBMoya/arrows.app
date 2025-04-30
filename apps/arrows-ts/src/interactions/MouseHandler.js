@@ -20,7 +20,14 @@ export default class MouseHandler {
   }
 
   handleWheel (evt) {
-    this.dispatch(wheel(this.canvasPosition(evt), new Vector(evt.deltaX, evt.deltaY), evt.ctrlKey))
+    // When shift is pressed, prioritize horizontal scrolling
+    if (evt.shiftKey) {
+      // If deltaY is non-zero (middle mouse wheel movement), use it for horizontal scrolling
+      const horizontalDelta = evt.deltaY !== 0 ? evt.deltaY : evt.deltaX
+      this.dispatch(wheel(this.canvasPosition(evt), new Vector(horizontalDelta, 0), evt.ctrlKey))
+    } else {
+      this.dispatch(wheel(this.canvasPosition(evt), new Vector(evt.deltaX, evt.deltaY), evt.ctrlKey))
+    }
     evt.preventDefault()
   }
 

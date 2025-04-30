@@ -22,7 +22,9 @@ export const wheel = (canvasPosition, vector, ctrlKey) => {
       const fitWidth = canvasSize.width / boundingBox.width
       const fitHeight = canvasSize.height / boundingBox.height
       const minScale = Math.min(1, fitWidth, fitHeight)
-      const scale = Math.max(currentScale * (100 - vector.dy) / 100, minScale)
+      // Reduce zoom sensitivity by applying a factor to make zooming more gradual
+      const zoomSensitivity = 0.2; // Lower value = less aggressive zooming
+      const scale = Math.max(currentScale * (100 - vector.dy * zoomSensitivity) / 100, minScale)
       const rawOffset = canvasPosition.vectorFrom(graphPosition.scale(scale))
       const constrainedOffset = constrainScroll(boundingBox, scale, rawOffset, canvasSize)
       const shouldCenter = scale <= fitHeight && scale <= fitWidth && vector.dy > 0
@@ -287,5 +289,3 @@ export const endDrag = () => {
     type: 'END_DRAG'
   }
 }
-
-
