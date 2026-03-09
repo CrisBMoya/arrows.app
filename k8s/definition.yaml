@@ -1,0 +1,35 @@
+# 1. The Deployment (Replaces 'kubectl create deployment')
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arrows-app
+spec:
+  replicas: 2 # You can specify how many copies of your app you want running
+  selector:
+    matchLabels:
+      app: arrows-app
+  template:
+    metadata:
+      labels:
+        app: arrows-app
+    spec:
+      containers:
+      - name: arrows-ts-container
+        # This points to the image you pushed to Artifact Registry
+        image: southamerica-west1-docker.pkg.dev/prj-ia-tecnoandina/arrows-repo/arrows-ts:v1
+        ports:
+        - [cite_start]containerPort: 3000 # Matches the EXPOSE 3000 in your Dockerfile [cite: 1]
+
+---
+# 2. The Service (Replaces 'kubectl expose deployment')
+apiVersion: v1
+kind: Service
+metadata:
+  name: arrows-app-service
+spec:
+  type: LoadBalancer # Gives you a public IP address
+  selector:
+    app: arrows-app
+  ports:
+  - port: 80         # The public port people type in their browser
+    [cite_start]targetPort: 3000 # The port your container listens on [cite: 1]

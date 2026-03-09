@@ -1,17 +1,30 @@
 steps:
-- name: node:18
-  entrypoint: npm
-  args: ['install']
+  # 1. Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build-Image'
+    args: 
+      - 'build'
+      - '-t'
+      - 'southamerica-west1-docker.pkg.dev/$PROJECT_ID/arrows-repo/arrows-ts:$COMMIT_SHA'
+      - '.'
 
-- name: node:18
-  entrypoint: npm
-  args: ['run', 'build']
-  secretEnv: ['VITE_GOOGLE_API_KEY']
+  # 2. Push the Docker image to Google Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push-Image'
+    args: 
+      - 'push'
+      - 'southamerica-west1-docker.pkg.dev/$PROJECT_ID/arrows-repo/arrows-ts:$COMMIT_SHA'
 
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['app', 'deploy']
+  # 3. Deploy to GKE 
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    id: 'Deploy-to-GKE'
+    args:
+      - 'run'
+      - '--filename=k8s/definition.yaml' # Points to your Kubernetes definition file
+      - '--image=southamerica-west1-docker.pkg.dev/$PROJECT_ID/arrows-repo/arrows-ts:$COMMIT_SHA'
+      - '--location=us-central1'
+      - '--cluster=arrows-cluster'
 
-availableSecrets:
-  secretManager:
-  - versionName: projects/arrows-app-295615/secrets/google-api-key/versions/1
-    env: 'VITE_GOOGLE_API_KEY'
+# This tells Cloud Build to use Artifact Registry to store the image metadata
+images:
+  - 'southamerica-west1-docker.pkg.dev/$PROJECT_ID/arrows-repo/arrows-ts:$COMMIT_SHA'
