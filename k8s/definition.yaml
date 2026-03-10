@@ -18,7 +18,7 @@ spec:
         # This points to the image you pushed to Artifact Registry
         image: southamerica-west1-docker.pkg.dev/prj-ia-tecnoandina/arrows-repo/arrows-ts:v1
         ports:
-        - [cite_start]containerPort: 3000 # Matches the EXPOSE 3000 in your Dockerfile [cite: 1]
+        - containerPort: 3000 # Matches the EXPOSE 3000 in your Dockerfile [cite: 1]
 
 ---
 # 2. The Service (Replaces 'kubectl expose deployment')
@@ -32,4 +32,4 @@ spec:
     app: arrows-app
   ports:
   - port: 80         # The public port people type in their browser
-    [cite_start]targetPort: 3000 # The port your container listens on [cite: 1]
+    targetPort: 3000 # The port your container listens on [cite: 1]
