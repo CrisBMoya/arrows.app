@@ -22,7 +22,7 @@ steps:
       - 'run'
       - '--filename=k8s/definition.yaml' # Points to your Kubernetes definition file
       - '--image=southamerica-west1-docker.pkg.dev/$PROJECT_ID/arrows-repo/arrows-ts:$COMMIT_SHA'
-      - '--location=us-central1'
+      - '--location=southamerica-west1'
       - '--cluster=arrows-cluster'
 
 # This tells Cloud Build to use Artifact Registry to store the image metadata
